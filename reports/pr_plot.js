@@ -12,9 +12,12 @@ var yScale = d3.scale.linear()
     .domain([0, dataset.max])
     .range([0, h]);
 
+d3.select("#svg-" + id).remove();
+
 //Create SVG element
 var svg = d3.select("#"+id)
     .append("svg")
+    .attr("id", "svg-" + id)
     .attr("width", w)
     .attr("height", h);
 

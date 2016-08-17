@@ -24,9 +24,12 @@ var rtplot = function (id, dataset, height) {
         .scale(yScale)
         .orient("left");
 
+    d3.select("#svg-" + id).remove();
+
     //Create SVG element
     var svg = d3.select("#"+id)
         .append("svg")
+        .attr("id", "svg-" + id)
         .attr("width", w + 170)
         .attr("height", h + margin)
         .append("g")

@@ -17,6 +17,8 @@ var histplot = function (id, dataset) {
 
 	//console.log(calcMeanSdVar1(d3.values(dataset)))
 
+	d3.select("#svg-" + id).remove();
+
 	var x = d3.scale.linear()
 		.domain([0, 1])
 		//.domain([min, max])
@@ -44,6 +46,7 @@ var histplot = function (id, dataset) {
 	//console.log(x(0), x(0.5), x(1));
 
 	var svg = d3.select("#"+id).append("svg")
+		.attr("id", "svg-" + id)
 		.attr("width", w + margin*6)
 		.attr("height", h + margin*3)
 	  .append("g")

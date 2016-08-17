@@ -104,10 +104,8 @@ Worker.prototype.connect = function () {
 };
 
 Worker.prototype.register = function () {
-	// TODO: check local and remote for IDLE status
 	// Register phone pairs
 	for (var i = 0, pair; i < this.pairs.lenght, pair = this.pairs[i]; i++) {
-		//console.log(pair.local.transport.isConnected(), pair.remote.transport.isConnected());
 		if (pair.local.transport.isConnected() && pair.remote.transport.isConnected()) {
 			pair.local.register();
 			pair.remote.register();
@@ -119,7 +117,9 @@ Worker.prototype.call = function (index) {
 	var pair = this.pairs[index];
 	// TODO: check local and remote for IDLE status
 	for (var i = 0, pair; i < this.pairs.lenght, pair = this.pairs[i]; i++) {
-		pair.local.call(pair.remote._ua.local.toString());
+		if (pair.local.transport.isConnected() && pair.remote.transport.isConnected() && pair.local.regState === "REGISTERED"  && pair.remote.regState === "REGISTERED") {
+			pair.local.call(pair.remote._ua.local.toString());
+		}
 	}
 };
 

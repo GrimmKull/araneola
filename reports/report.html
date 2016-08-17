@@ -491,10 +491,9 @@
         data: [{ lbl: "PC", val: 1000 }, { lbl: "RPI 1 C4", val: 500 }, { lbl: "RPI 1 C10", val: 600 }, { lbl: "RPI 2 C4", val: 700 }, { lbl: "RPI 2 C10", val: 800 }, { lbl: "SRVR", val: 980 }]
     }
 
-
-
 	// NOTE: testing server
-	var server = "192.168.1.103:5010";//"10.1.2.80:5010";//"10.1.80.105:5010"; //"192.168.1.109:5010"; //"10.1.80.105:5010"; //"192.168.1.103:5010";
+
+	var server = location.hostname + ":" + location.port;
 	var ws = new WebSocket("ws://" + server + "/ws");
 
 	ws.onopen = function() {
