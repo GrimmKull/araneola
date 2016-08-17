@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title></title>
+
+	<link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.5/material.blue_grey-red.min.css">
+	<script src="https://storage.googleapis.com/code.getmdl.io/1.0.5/material.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+	<link rel="shortcut icon" href="icons/fav_icon.ico">
+
+	<script src="phones_plot.js" charset="utf-8"></script>
+	<script src="hist_plot.js" charset="utf-8"></script>
+	<script src="rt_plot.js" charset="utf-8"></script>
+	<script src="pr_plot.js" charset="utf-8"></script>
+	<script src="trans_plot.js" charset="utf-8"></script>
+
+	<style type="text/css">
+		.mdl-card__title {
+			padding: 0;
+			position: relative;
+			background: rgb(255, 193, 7);
+			padding: 10px;
+		}
+		/*.mdl-layout-icon {
+	background: url(icons/icon_32.png);
+}*/
+
+		.mdl-layout-title {
+			margin-left: -9px;
+		}
+
+		button {
+			float: right;
+			top: 16px;
+			margin: 0 5px !important;
+		}
+
+		.mdl-mini-footer--social-btn {
+			background: none;
+			color: #cecece;
+		}
+
+		.mdl-card, .mdl-card__supporting-text {
+			width: 100%;
+		}
+
+		.fa {
+			font-size: 25px;
+		}
+
+		.grid {
+			max-width: 900px;
+		}
+
+		path {
+			fill: none;
+			stroke: black;
+		}
+
+		path.line {
+			fill: rgb(255, 193, 7);
+			/*#27AE60;*/
+		}
+
+		rect.bar,
+		rect.span {
+			fill: rgb(255, 152, 0);
+		}
+
+		.foreground path {
+			stroke: rgb(255, 193, 7);
+			/*#27AE60;*/
+			opacity: 0.35;
+		}
+
+		rect.avg {
+			fill: black;
+		}
+
+		rect.devmin,
+		rect.devmax {
+			fill: #790000;
+			opacity: 0.5;
+			width: 3px;
+		}
+
+		.state .axis path {
+			stroke: none;
+			fill: rgb(255, 152, 0);
+			/*darkgreen;*/
+		}
+
+		#phones {
+			width: 90%;
+			margin: 0 auto;
+		}
+
+		#a_phones,
+		#b_phones {
+			width: 50%;
+			min-height: 200px;
+			float: left;
+		}
+
+		#a_phones {
+			background: #ccc;
+		}
+
+		.description {
+			padding: 10px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+            mdl-layout--fixed-tabs">
+		<header class="mdl-layout__header">
+			<div class="mdl-layout__header-row">
+				<!-- Title -->
+				<span class="mdl-layout-title">Report</span>
+			</div>
+			<!-- Tabs -->
+			<div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+				<a href="#req-tab" class="mdl-layout__tab is-active">Requests</a>
+				<a href="#reg-tab" class="mdl-layout__tab">Register</a>
+				<a href="#inv-tab" class="mdl-layout__tab">Invite</a>
+				<a href="#bye-tab" class="mdl-layout__tab">Bye</a>
+			</div>
+		</header>
+		<!-- <div class="mdl-layout__drawer">
+			<span class="mdl-layout-title">Title</span>
+		</div> -->
+		<main class="mdl-layout__content">
+			<section class="mdl-layout__tab-panel is-active" id="req-tab">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<div class="mdl-grid grid">
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Response Times</h2>
+								</div>
+								<div id="response_plot" class="mdl-card__supporting-text">
+									<div class="description">Minimum, Maximum, Median and Standard deviation of Response Times</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Processed Requests</h2>
+								</div>
+								<div id="processed_plot" class="mdl-card__supporting-text">
+									<div class="description">Processed request out of <span id="total">1000</span> </div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Phones</h2>
+								</div>
+								<div id="phones_plot" class="mdl-card__supporting-text">
+									<div class="description">Current status of spawned webphones</div>
+									<div id="phones" class="mdl-card__supporting-text">
+			                        	<div id="a_phones"></div>
+										<div id="b_phones"></div>
+			                        </div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="mdl-layout__tab-panel" id="reg-tab">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<div class="mdl-grid grid">
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local 401 Histogram</h2>
+								</div>
+								<div id="a_reg_401_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Local webphone REGISTER request transaction with response 401</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local 200 Histogram</h2>
+								</div>
+								<div id="a_reg_200_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Local webphone REGISTER request transaction with response 200</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote 401 Histogram</h2>
+								</div>
+								<div id="b_reg_401_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Remote webphone REGISTER request transaction with response 401</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote 200 Histogram</h2>
+								</div>
+								<div id="b_reg_200_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Remote webphone REGISTER request transaction with response 200</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local 401 Transactions</h2>
+								</div>
+								<div id="a_reg_401_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Local webphone REGISTER request with response 401</div>
+									<div id="a_reg_401_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local 200 Transactions</h2>
+								</div>
+								<div id="a_reg_200_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Local webphone REGISTER request with response 200</div>
+									<div id="a_reg_200_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote 401 Transactions</h2>
+								</div>
+								<div id="b_reg_401_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Remote webphone REGISTER request with response 401</div>
+									<div id="b_reg_401_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote 200 Transactions</h2>
+								</div>
+								<div id="b_reg_200_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Remote webphone REGISTER request with response 200</div>
+									<div id="b_reg_200_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="mdl-layout__tab-panel" id="inv-tab">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<div class="mdl-grid grid">
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local Histogram</h2>
+								</div>
+								<div id="a_inv_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Local webphone INVITE request transaction</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote Histogram</h2>
+								</div>
+								<div id="b_inv_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Remote webphone INVITE request transaction</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local Transactions</h2>
+								</div>
+								<div id="a_inv_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Local webphone INVITE request</div>
+									<div id="a_inv_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote Transactions</h2>
+								</div>
+								<div id="b_inv_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Remote webphone INVITE request</div>
+									<div id="b_inv_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="mdl-layout__tab-panel" id="bye-tab">
+				<div class="page-content">
+					<!-- Your content goes here -->
+					<div class="mdl-grid grid">
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local Histogram</h2>
+								</div>
+								<div id="a_bye_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Local webphone BYE request transaction</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote Histogram</h2>
+								</div>
+								<div id="b_bye_hist_plot" class="mdl-card__supporting-text">
+									<div class="description">Histogram for Remote webphone BYE request transaction</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Local Transactions</h2>
+								</div>
+								<div id="a_bye_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Local webphone BYE request</div>
+									<div id="a_bye_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+
+						<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-card mdl-shadow--2dp">
+								<div class="mdl-card__title mdl-card--expand">
+									<h2 class="mdl-card__title-text">Remote Transactions</h2>
+								</div>
+								<div id="b_bye_trans_plot" class="mdl-card__supporting-text">
+									<div class="description">Transaction plot for Remote webphone BYE request</div>
+									<div id="b_bye_trans_plot_lbl">Transaction type</div>
+								</div>
+								<!-- <div class="mdl-card__actions mdl-card--border">
+									<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">View Updates</a>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+
+
+			<footer class="mdl-mini-footer">
+				<div class="mdl-mini-footer--left-section">
+					<button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+						<i class="fa fa-twitter"></i>
+						<span class="visuallyhidden">Twitter</span>
+					</button>
+					<button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
+						<i class="fa fa-google-plus"></i>
+						<span class="visuallyhidden">Google Plus</span>
+					</button>
+					<button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+						<i class="fa fa-github"></i>
+						<span class="visuallyhidden">Github</span>
+					</button>
+				</div>
+				<div class="mdl-mini-footer--right-section">
+					<button class="mdl-mini-footer--social-btn social-btn__share">
+						<!-- <i class="material-icons" role="presentation">share</i> -->
+						<!-- <i class="fa fa-share-alt"></i> -->
+						<i class="fa fa-envelope"></i>
+						<span class="visuallyhidden">share</span>
+					</button>
+				</div>
+			</footer>
+		</main>
+	</div>
+
+
+
+
+	<script type="text/javascript">
+	// NOTE: Response time data:
+
+	var rt_dataset = {
+        // data: [{ lbl: "PC", min: 100, max: 140, avg: 130, std: 8 }, { lbl: "RPI 1 C4", min: 50, max: 60, avg: 53, std: 3 }, { lbl: "RPI 1 C10", min: 60, max: 70, avg: 68, std: 5 }, { lbl: "RPI 2 C4", min: 70, max: 86, avg: 80, std: 4 }, { lbl: "RPI 2 C10", min: 80, max: 90, avg: 81, std: 6 }, { lbl: "SRVR", min: 68, max: 80, avg: 70, std: 7 },
+		data: [{ lbl: "REG 401", min: 1752, max: 2338, avg: 1974.88, std: 132.71414996148678 }, { lbl: "REG 200", min: 515, max: 1425, avg: 1109.74, std: 280.06894222673105 }]
+    }
+
+    // NOTE: Processed Requests data:
+    var pr_dataset = {
+        max: 1000,
+        data: [{ lbl: "PC", val: 1000 }, { lbl: "RPI 1 C4", val: 500 }, { lbl: "RPI 1 C10", val: 600 }, { lbl: "RPI 2 C4", val: 700 }, { lbl: "RPI 2 C10", val: 800 }, { lbl: "SRVR", val: 980 }]
+    }
+
+
+
+	// NOTE: testing server
+	var server = "192.168.1.103:5010";//"10.1.2.80:5010";//"10.1.80.105:5010"; //"192.168.1.109:5010"; //"10.1.80.105:5010"; //"192.168.1.103:5010";
+	var ws = new WebSocket("ws://" + server + "/ws");
+
+	ws.onopen = function() {
+		console.log("[OPENED]");
+
+		ws.send(JSON.stringify({command: "jobs"}));
+	};
+
+	ws.onclose = function() {
+		console.log("[CLOSED]");
+	};
+
+	// Number of running jobs:
+	var items = 0;
+	var a_phones = {};
+	var b_phones = {};
+
+	ws.onmessage = function(msg) {
+		var input = JSON.parse(msg.data);
+		// a_reg_non_c_plot.max = 0;
+		// b_reg_non_c_plot.max = 0;
+		//
+		// a_reg_non_c_plot.data = [];
+		// b_reg_non_c_plot.data = [];
+		//console.log("[MSG]", input, msg.data);
+		// console.log(input)
+		if (input.event === "jobs") {
+			items = parseInt(input.data);
+
+			document.getElementById("total").innerText = items;
+
+			for (var i = 0; i < items; i++) {
+				a_phones["ana_"+i] = {
+					name: "ana_"+i,
+					state: "pending",
+
+					requests: {},
+					transactions: [],
+				};
+
+				b_phones["bob_"+i] = {
+					name: "bob_"+i,
+					state: "pending",
+
+					requests: {},
+					transactions: [],
+				};
+			}
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "created") {
+			console.log(input.event, input.data.phone, input.data.state, input.data);
+
+			if (input.data.phone.indexOf("ana_") === 0)
+				a_phones[input.data.phone].state = input.event;
+			else if (input.data.phone.indexOf("bob_") === 0)
+				b_phones[input.data.phone].state = input.event;
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "connected") {
+			// console.log(input.event, input.data.phone, input.data.state, input.data);
+
+			if (input.data.phone.indexOf("ana_") === 0)
+				a_phones[input.data.phone].state = input.event;
+			else if (input.data.phone.indexOf("bob_") === 0)
+				b_phones[input.data.phone].state = input.event;
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "registered") {
+			//console.log(input.event, input.data.phone, input.data.state, input.data);
+
+			if (input.data.phone.indexOf("ana_") === 0) {
+				a_phones[input.data.phone].state = input.event;
+				a_phones[input.data.phone].requests = input.data;
+			} else if (input.data.phone.indexOf("bob_") === 0) {
+				b_phones[input.data.phone].state = input.event;
+				b_phones[input.data.phone].requests = input.data;
+			}
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "call") {
+		} else if (input.event === "transaction") {
+			//console.log(input.event, input.data.phone, input.data.state, input.data.msg);
+
+			if (input.data.phone.indexOf("ana_") === 0) {
+				// a_phones[input.data.phone].state = input.event;
+				a_phones[input.data.phone].transactions.push(input.data);
+			} else if (input.data.phone.indexOf("bob_") === 0) {
+				// b_phones[input.data.phone].state = input.event;
+				b_phones[input.data.phone].transactions.push(input.data);
+			}
+
+		} else if (input.event === "transactions") {
+			console.log(input.event, input.data.phone, input.data.state, input.data.msg);
+			//return;
+		}
+	};
+
+	ws.onerror = function(error) {
+		console.log("ERROR:", error);
+	};
+
+	// Test phase initiation commands
+
+	function create() {
+		ws.send(JSON.stringify({command: "create"}));
+	};
+
+	function connect() {
+		ws.send(JSON.stringify({command: "connect"}));
+	};
+
+	function register() {
+		ws.send(JSON.stringify({command: "register"}));
+	};
+
+	function call() {
+		ws.send(JSON.stringify({command: "call"}));
+	};
+
+	var a_reg_401_reqs = [];
+	var a_reg_200_reqs = [];
+	var b_reg_401_reqs = [];
+	var b_reg_200_reqs = [];
+
+	var a_reg_401_history = { max: 0, data: [], type: "" };
+	var a_reg_200_history = { max: 0, data: [], type: "" };
+	var b_reg_401_history = { max: 0, data: [], type: "" };
+	var b_reg_200_history = { max: 0, data: [], type: "" };
+
+	var a_inv_reqs = [];
+	var b_inv_reqs = [];
+	var a_inv_history = { max: 0, data: [], type: "" };
+	var b_inv_history = { max: 0, data: [], type: "" };
+
+	var a_bye_reqs = [];
+	var b_bye_reqs = [];
+	var a_bye_history = { max: 0, data: [], type: "" };
+	var b_bye_history = { max: 0, data: [], type: "" };
+
+	var call_duration = {};
+
+	function clearPlotData() {
+		a_reg_401_reqs = [];
+		a_reg_200_reqs = [];
+		b_reg_401_reqs = [];
+		b_reg_200_reqs = [];
+
+		a_reg_401_history = { max: 0, data: [], type: "" };
+		a_reg_200_history = { max: 0, data: [], type: "" };
+		b_reg_401_history = { max: 0, data: [], type: "" };
+		b_reg_200_history = { max: 0, data: [], type: "" };
+
+		a_inv_reqs = [];
+		b_inv_reqs = [];
+		a_inv_history = { max: 0, data: [], type: "" };
+		b_inv_history = { max: 0, data: [], type: "" };
+
+		a_bye_reqs = [];
+		b_bye_reqs = [];
+		a_bye_history = { max: 0, data: [], type: "" };
+		b_bye_history = { max: 0, data: [], type: "" };
+	}
+
+	function parseTransactions() {
+		// phones = a_phones | b_phones
+		// use 'a' or 'b' label prefix
+
+		for ( var key in a_phones ) {
+		    if (a_phones.hasOwnProperty(key)) {
+				var callStart = 0;
+				var callEnd = 0;
+				//console.log(a_phones[key].transactions.msg);
+				if (a_phones[key].transactions) {
+					for (var i = 0; i < a_phones[key].transactions.length; i++) {
+						var history = a_phones[key].transactions[i].msg.data.history;
+						var type = a_phones[key].transactions[i].msg.data.type;
+						var req = a_phones[key].transactions[i].msg.data.request;
+
+						for (var j = 0; j < req.responses.length; j++) {
+							var resp = req.responses[j];
+
+							var start = req.sentAt || resp.sentAt;
+							var parse = resp.parseTime;
+							var end = resp.receivedAt || req.receivedAt;
+							var code = resp.code;
+
+							console.log(code, (code !== 401 || code !== 200));
+							if (code !== 401 && code !== 200) continue;
+
+							if (req.method === "REGISTER") {
+								if (code === 401) {
+									a_reg_401_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+									parseHistory(type, history, a_reg_401_history);
+									a_reg_401_history.type = type;
+								} else if (code === 200) {
+									a_reg_200_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+									parseHistory(type, history, a_reg_200_history);
+									a_reg_200_history.type = type;
+								}
+							} else if (req.method === "INVITE") {
+								a_inv_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+								parseHistory(type, history, a_inv_history);
+								a_inv_history.type = type;
+
+								callStart = start;
+							} else if (req.method === "BYE") {
+								a_bye_reqs.push({ code: code, parse: parse, response:  Math.abs(end - start), start: start, end: end });
+								parseHistory(type, history, a_bye_history);
+								a_bye_history.type = type;
+
+								callEnd = start;
+							}
+						}
+					}
+				}
+
+
+				call_duration[key] = { start: callStart, end: callEnd, duration: callEnd - callStart };
+		    }
+		}
+
+		for ( var key in b_phones ) {
+		    if (b_phones.hasOwnProperty(key)) {
+				//console.log(b_phones[key].transactions.msg);
+				if (b_phones[key].transactions) {
+					for (var i = 0; i < b_phones[key].transactions.length; i++) {
+						var history = b_phones[key].transactions[i].msg.data.history;
+						var type = b_phones[key].transactions[i].msg.data.type;
+						var req = b_phones[key].transactions[i].msg.data.request;
+
+						for (var j = 0; j < req.responses.length; j++) {
+							var resp = req.responses[j];
+
+							var start = req.sentAt || resp.sentAt;
+							var parse = resp.parseTime;
+							var end = resp.receivedAt || req.receivedAt;
+							var code = resp.code;
+
+							if (code !== 401 && code !== 200) continue;
+
+							//console.log(code, parse, end - start, start, end);
+							if (req.method === "REGISTER") {
+								if (code === 401) {
+									b_reg_401_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+									parseHistory(type, history, b_reg_401_history);
+									b_reg_401_history.type = type;
+								} else if (code === 200) {
+									b_reg_200_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+									parseHistory(type, history, b_reg_200_history);
+									b_reg_200_history.type = type;
+								}
+							} else if (req.method === "INVITE") {
+								b_inv_reqs.push({ code: code, parse: parse, response:  Math.abs(end - start), start: start, end: end });
+								parseHistory(type, history, b_inv_history);
+								b_inv_history.type = type;
+							} else if (req.method === "BYE") {
+								b_bye_reqs.push({ code: code, parse: parse, response:  Math.abs(end - start), start: start, end: end });
+								parseHistory(type, history, b_bye_history);
+								b_bye_history.type = type;
+							}
+						}
+					}
+				}
+		    }
+		}
+	};
+
+
+	function parseHistory(type, hist, container) {
+		var point = [];
+
+		if (type === "INV_CLIENT") {
+			// // NOTE: INVITE client transaction
+		    // // state: "Calling"
+		    // // state: "Proceeding"
+		    // // state: "Completed"
+		    // // state: "Terminated"
+			point.push({ state: "Calling", start: 0, end: 0});
+			point.push({ state: "Proceeding", start: 0, end: 0});
+			point.push({ state: "Completed", start: 0, end: 0});
+			point.push({ state: "Terminated", start: 0, end: 0});
+
+			for (var i = 0; i < hist.length; i++) {
+				if (hist[i].to === "CALLING") {
+					point[0].start = hist[i].at;
+					point[0].end = hist[i].at;
+				} else if (hist[i].to === "PROCEEDING") {
+					point[1].start = hist[i].at;
+					point[1].end = hist[i].at;
+				} else if (hist[i].to === "COMPLETED") {
+					point[2].start = hist[i].at;
+					point[2].end = hist[i].at;
+				} else if (hist[i].to === "TERMINATED") {
+					point[3].start = hist[i].at;
+					point[3].end = hist[i].at;
+				}
+
+				if (hist[i].from === "CALLING")
+					point[0].end = hist[i].at;
+				else if (hist[i].from === "PROCEEDING")
+					point[1].end = hist[i].at;
+				else if (hist[i].from === "COMPLETED")
+					point[2].end = hist[i].at;
+				else if (hist[i].from === "TERMINATED")
+					point[3].end = hist[i].at;
+			}
+
+		} else if (type === "NON_CLIENT") {
+		    // // NOTE: Non-Invite Client transaction state duration
+		    // // state: "Trying"
+		    // // state: "Proceeding"
+		    // // state: "Completed"
+		    // // state: "Terminated"
+			point.push({ state: "Trying", start: 0, end: 0});
+			point.push({ state: "Proceeding", start: 0, end: 0});
+			point.push({ state: "Completed", start: 0, end: 0});
+			point.push({ state: "Terminated", start: 0, end: 0});
+
+			for (var i = 0; i < hist.length; i++) {
+				if (hist[i].to === "TRYING") {
+					point[0].start = hist[i].at;
+					point[0].end = hist[i].at;
+				} else if (hist[i].to === "PROCEEDING") {
+					point[1].start = hist[i].at;
+					point[1].end = hist[i].at;
+				} else if (hist[i].to === "COMPLETED") {
+					point[2].start = hist[i].at;
+					point[2].end = hist[i].at;
+				} else if (hist[i].to === "TERMINATED") {
+					point[3].start = hist[i].at;
+					point[3].end = hist[i].at;
+				}
+
+				if (hist[i].from === "TRYING")
+					point[0].end = hist[i].at;
+				else if (hist[i].from === "PROCEEDING")
+					point[1].end = hist[i].at;
+				else if (hist[i].from === "COMPLETED")
+					point[2].end = hist[i].at;
+				else if (hist[i].from === "TERMINATED")
+					point[3].end = hist[i].at;
+			}
+
+		} else if (type === "INV_SERVER") {
+		    // // NOTE: Invite Server transaction state duration
+		    // // state: "Proceeding"
+		    // // state: "Completed"
+		    // // state: "Confirmed"
+		    // // state: "Terminated"
+			point.push({ state: "Proceeding", start: 0, end: 0});
+			point.push({ state: "Completed", start: 0, end: 0});
+			point.push({ state: "Confirmed", start: 0, end: 0});
+			point.push({ state: "Terminated", start: 0, end: 0});
+
+			for (var i = 0; i < hist.length; i++) {
+				if (hist[i].to === "PROCEEDING") {
+					point[0].start = hist[i].at;
+					point[0].end = hist[i].at;
+				} else if (hist[i].to === "COMPLETED") {
+					point[1].start = hist[i].at;
+					point[1].end = hist[i].at;
+				} else if (hist[i].to === "CONFIRMED") {
+					point[2].start = hist[i].at;
+					point[2].end = hist[i].at;
+				} else if (hist[i].to === "TERMINATED") {
+					point[3].start = hist[i].at;
+					point[3].end = hist[i].at;
+				}
+
+				if (hist[i].from === "PROCEEDING")
+					point[0].end = hist[i].at;
+				else if (hist[i].from === "COMPLETED")
+					point[1].end = hist[i].at;
+				else if (hist[i].from === "CONFIRMED")
+					point[2].end = hist[i].at;
+				else if (hist[i].from === "TERMINATED")
+					point[3].end = hist[i].at;
+			}
+
+		} else if (type === "NON_SERVER") {
+		    // // NOTE: Non-Invite Server transaction state duration
+		    // // state: "Trying"
+		    // // state: "Proceeding"
+		    // // state: "Completed"
+		    // // state: "Terminated"
+			point.push({ state: "Trying", start: 0, end: 0});
+			point.push({ state: "Proceeding", start: 0, end: 0});
+			point.push({ state: "Completed", start: 0, end: 0});
+			point.push({ state: "Terminated", start: 0, end: 0});
+
+			for (var i = 0; i < hist.length; i++) {
+				if (hist[i].to === "TRYING") {
+					point[0].start = hist[i].at;
+					point[0].end = hist[i].at;
+				} else if (hist[i].to === "PROCEEDING") {
+					point[1].start = hist[i].at;
+					point[1].end = hist[i].at;
+				} else if (hist[i].to === "COMPLETED") {
+					point[2].start = hist[i].at;
+					point[2].end = hist[i].at;
+				} else if (hist[i].to === "TERMINATED") {
+					point[3].start = hist[i].at;
+					point[3].end = hist[i].at;
+				}
+
+				if (hist[i].from === "TRYING")
+					point[0].end = hist[i].at;
+				else if (hist[i].from === "PROCEEDING")
+					point[1].end = hist[i].at;
+				else if (hist[i].from === "COMPLETED")
+					point[2].end = hist[i].at;
+				else if (hist[i].from === "TERMINATED")
+					point[3].end = hist[i].at;
+			}
+		}
+
+		// Check if TERMINATED
+		if (point[3].start !== 0) {
+			container.data.push(point);
+			container.max++;
+		}
+	};
+
+	function plotData() {
+		clearPlotData();
+		parseTransactions();
+
+		rtplot("response_plot", rt_dataset);
+		prplot("processed_plot", pr_dataset);
+
+		histplot("a_reg_200_hist_plot", a_reg_200_reqs);
+		histplot("a_reg_401_hist_plot", a_reg_401_reqs);
+		histplot("b_reg_200_hist_plot", b_reg_200_reqs);
+		histplot("b_reg_401_hist_plot", b_reg_401_reqs);
+		transplot("a_reg_200_trans_plot", a_reg_200_history);
+		transplot("a_reg_401_trans_plot", a_reg_401_history);
+		transplot("b_reg_200_trans_plot", b_reg_200_history);
+		transplot("b_reg_401_trans_plot", b_reg_401_history);
+
+		histplot("a_inv_hist_plot", a_inv_reqs);
+		histplot("b_inv_hist_plot", b_inv_reqs);
+		transplot("a_inv_trans_plot", a_inv_history);
+		transplot("b_inv_trans_plot", b_inv_history);
+
+		histplot("a_bye_hist_plot", a_bye_reqs);
+		histplot("b_bye_hist_plot", b_bye_reqs);
+		transplot("a_bye_trans_plot", a_bye_history);
+		transplot("b_bye_trans_plot", b_bye_history);
+	};
+
+	var count = 0;
+	var calls = [];
+
+	function parseCallDuration() {
+		for ( var key in call_duration ) {
+		    if (call_duration.hasOwnProperty(key)) {
+				if (call_duration[key].duration !== 0) {
+					count++;
+					calls.push(call_duration[key].duration)
+				}
+			}
+		}
+	};
+
+	function calcMeanSdVar(values) {
+		// NOTE:
+		// For Population Standard Deviation use count to divide
+		// For Standard Deviation use count - 1 to divide
+	    var r = {
+	        mean: 0,
+	        variance: 0,
+	        deviation: 0,
+			min: 0,
+			max: 0,
+	    };
+
+	    var count = values.length;
+
+		r.min = values[count -1];
+
+	    for(var m, s = 0, l = count; l--; ) {
+	        s += values[l];
+			if (r.min > values[l]) r.min = values[l];
+			if (r.max < values[l]) r.max = values[l];
+	    }
+
+	    for(m = r.mean = s / count, l = count, s = 0; l--;) {
+	        s += Math.pow(values[l] - m, 2)
+	    }
+
+	    r.variance = s / count;
+	    r.deviation = Math.sqrt(r.variance);
+
+	    return r;
+	}
+
+	var a_states = {};
+	var b_states = {};
+
+	function calcPhoneStates() {
+		for ( var key in a_phones ) {
+			if (a_phones.hasOwnProperty(key)) {
+				if (a_states[a_phones[key].state]) {
+					a_states[a_phones[key].state]++;
+				} else {
+					a_states[a_phones[key].state] = 1;
+				}
+
+			}
+		}
+
+		for ( var key in b_phones ) {
+		    if (b_phones.hasOwnProperty(key)) {
+				if (b_states[b_phones[key].state]) {
+					b_states[b_phones[key].state]++;
+				} else {
+					b_states[b_phones[key].state] = 1;
+				}
+
+			}
+		}
+	}
+
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.5/material.blue_grey-red.min.css">
+	<script src="https://storage.googleapis.com/code.getmdl.io/1.0.5/material.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+	<link rel="shortcut icon" href="icons/fav_icon.ico">
+
+	<script src="phones_plot.js" charset="utf-8"></script>
+	<script src="hist_plot.js" charset="utf-8"></script>
+	<script src="rt_plot.js" charset="utf-8"></script>
+    <script src="pr_plot.js" charset="utf-8"></script>
+    <script src="trans_plot.js" charset="utf-8"></script>
+
+	<style type="text/css">
+.mdl-card__title {
+	padding: 0;
+	position: relative;
+
+    background: rgb(255, 193, 7);
+    padding: 10px;
+}
+
+/*.mdl-layout-icon {
+	background: url(icons/icon_32.png);
+}*/
+
+
+.mdl-layout-title {
+	margin-left: -9px;
+}
+
+button {
+	float: right;
+	top: 16px;
+	margin: 0 5px !important;
+}
+
+.mdl-mini-footer--social-btn {
+	background: none;
+	color: #cecece;
+}
+
+.mdl-card__supporting-text {
+	width: 100%;
+}
+
+.fa {
+	font-size: 25px;
+}
+
+.grid {
+	max-width: 900px;
+}
+
+path {
+	fill: none;
+	stroke: black;
+}
+
+path.line {
+	fill: rgb(255, 193, 7);/*#27AE60;*/
+}
+
+rect.bar, rect.span {
+	fill:  rgb(255, 152, 0);
+}
+
+.foreground path {
+	stroke:  rgb(255, 193, 7);/*#27AE60;*/
+}
+
+rect.avg {
+	fill: black;
+}
+
+rect.devmin, rect.devmax {
+	fill: #790000;
+	opacity: 0.5;
+	width: 3px;
+}
+
+.state .axis path {
+	stroke: none;
+	fill: rgb(255, 152, 0);/*darkgreen;*/
+}
+
+#phones {
+	width: 90%;
+	margin: 0 auto;
+}
+
+#a_phones, #b_phones {
+	width: 50%;
+	min-height: 200px;
+	float: left;
+}
+
+#a_phones {
+	background: #ccc;
+}
+	</style>
+</head>
+<body>
+	<div class="mdl-layout__container"></div>
+		<div class="mdl-layout">
+			<header class="mdl-layout__header">
+				<div class="mdl-layout-icon"></div>
+				<div class="mdl-layout__header-row">
+					<span class="mdl-layout-title">Reticulum project analysis</span>
+					<div class="mdl-layout-spacer"></div>
+					<nav class="mdl-navigation">
+						<!-- <a class="mdl-navigation__link" href="/phone.html">Phone</a> -->
+					</nav>
+				</div>
+			</header>
+
+			<main class="mdl-layout__content">
+				<div class="grid mdl-grid">
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+						<div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Response Times</h2>
+						</div>
+
+                        <div id="rt_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+						<div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Processed Requests</h2>
+						</div>
+
+                        <div id="pr_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+						<div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Register Requests 200 Response Histogram</h2>
+						</div>
+
+                        <div id="reg200_hist_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+						<div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Register Requests 401 Response Histogram</h2>
+						</div>
+
+                        <div id="reg401_hist_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+						<div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Phones</h2>
+						</div>
+
+                        <div id="phones" class="mdl-card__supporting-text">
+                        	<div id="a_phones"></div>
+							<div id="b_phones"></div>
+                        </div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+                    <!-- <div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">INVITE Client Transaction states</h2>
+						</div>
+
+                        <div id="inv_c_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+                    <div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">NON-INVITE Client Transaction states</h2>
+                        </div>
+
+                        <div id="non_c_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+                    <div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">INVITE Server Transaction states</h2>
+                        </div>
+
+                        <div id="inv_s_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+                    <div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">NON-INVITE Server Transaction states</h2>
+                        </div>
+
+                        <div id="non_s_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div> -->
+
+
+
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">A REGISTER NON-INVITE Client Transaction states</h2>
+                        </div>
+
+                        <div id="a_reg_non_c_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+
+					<div class="mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp">
+
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">B REGISTER NON-INVITE Client Transaction states</h2>
+                        </div>
+
+                        <div id="b_reg_non_c_plot" class="mdl-card__supporting-text"></div>
+
+						<div class="mdl-card__actions mdl-card--border">
+
+						</div>
+					</div>
+				</div>
+
+				<footer class="mdl-mini-footer">
+					<div class="mdl-mini-footer--left-section">
+						<button class="mdl-mini-footer--social-btn social-btn social-btn__twitter">
+							<i class="fa fa-twitter"></i>
+							<span class="visuallyhidden">Twitter</span>
+						</button>
+						<button class="mdl-mini-footer--social-btn social-btn social-btn__gplus">
+							<i class="fa fa-google-plus"></i>
+							<span class="visuallyhidden">Google Plus</span>
+						</button>
+						<button class="mdl-mini-footer--social-btn social-btn social-btn__blogger">
+							<i class="fa fa-github"></i>
+							<span class="visuallyhidden">Github</span>
+						</button>
+					</div>
+					<div class="mdl-mini-footer--right-section">
+						<button class="mdl-mini-footer--social-btn social-btn__share">
+							<!-- <i class="material-icons" role="presentation">share</i> -->
+							<!-- <i class="fa fa-share-alt"></i> -->
+							<i class="fa fa-envelope"></i>
+							<span class="visuallyhidden">share</span>
+						</button>
+					</div>
+				</footer>
+			</main>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	// NOTE: Response time data:
+
+	// var client_send_time;
+	// var server_receive_time;
+	// var server_parse_time;
+	// var server_send_time;
+	// var client_parse_time;
+	// var client_response_time;
+
+	var rt_dataset = {
+        // data: [{ lbl: "PC", min: 100, max: 140, avg: 130, std: 8 }, { lbl: "RPI 1 C4", min: 50, max: 60, avg: 53, std: 3 }, { lbl: "RPI 1 C10", min: 60, max: 70, avg: 68, std: 5 }, { lbl: "RPI 2 C4", min: 70, max: 86, avg: 80, std: 4 }, { lbl: "RPI 2 C10", min: 80, max: 90, avg: 81, std: 6 }, { lbl: "SRVR", min: 68, max: 80, avg: 70, std: 7 },
+		data: [{ lbl: "REG 401", min: 1752, max: 2338, avg: 1974.88, std: 132.71414996148678 }, { lbl: "REG 200", min: 515, max: 1425, avg: 1109.74, std: 280.06894222673105 }]
+    }
+
+
+
+    // NOTE: Processed Requests data:
+    var pr_dataset = {
+        max: 1000,
+        data: [{ lbl: "PC", val: 1000 }, { lbl: "RPI 1 C4", val: 500 }, { lbl: "RPI 1 C10", val: 600 }, { lbl: "RPI 2 C4", val: 700 }, { lbl: "RPI 2 C10", val: 800 }, { lbl: "SRVR", val: 980 }]
+    }
+
+    // var state_min, state_max;
+    // var ic_dataset = {max: 10, data: []};
+    // var nc_dataset = {max: 10, data: []};
+    // var is_dataset = {max: 10, data: []};
+    // var ns_dataset = {max: 10, data: []};
+	//
+    // // NOTE: INVITE client transaction
+    // // state: "Calling"
+    // // state: "Proceeding"
+    // // state: "Completed"
+    // // state: "Terminated"
+    // for (var i = 0; i < ic_dataset.max; i++) {
+    //     var point = [];
+    //     point.push({ state: "Calling", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%50 +10});
+    //     point.push({ state: "Proceeding", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%20})
+    //     point.push({ state: "Completed", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%30 + 5})
+    //     point.push({ state: "Terminated", start: Date.now(), end: Date.now() + 0})//Math.ceil(Math.random()*1000)%50})
+    //     ic_dataset.data.push(point)
+    // }
+	//
+    // console.log(ic_dataset);
+    // // NOTE: Non-Invite Client transaction state duration
+    // // state: "Trying"
+    // // state: "Proceeding"
+    // // state: "Completed"
+    // // state: "Terminated"
+    // for (var i = 0; i < nc_dataset.max; i++) {
+    //     var point = [];
+    //     point.push({ state: "Trying", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%50 +10});
+    //     point.push({ state: "Proceeding", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%20})
+    //     point.push({ state: "Completed", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%30 + 5})
+    //     point.push({ state: "Terminated", start: Date.now(), end: Date.now() + 0})//Math.ceil(Math.random()*1000)%50})
+    //     nc_dataset.data.push(point)
+    // }
+    // // NOTE: Invite Server transaction state duration
+    // // state: "Proceeding"
+    // // state: "Completed"
+    // // state: "Confirmed"
+    // // state: "Terminated"
+    // for (var i = 0; i < is_dataset.max; i++) {
+    //     var point = [];
+    //     point.push({ state: "Proceeding", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%50 +10});
+    //     point.push({ state: "Completed", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%20})
+    //     point.push({ state: "Confirmed", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%30 + 5})
+    //     point.push({ state: "Terminated", start: Date.now(), end: Date.now() + 0})//Math.ceil(Math.random()*1000)%50})
+    //     is_dataset.data.push(point)
+    // }
+    // // NOTE: Non-Invite Server transaction state duration
+    // // state: "Trying"
+    // // state: "Proceeding"
+    // // state: "Completed"
+    // // state: "Terminated"
+    // for (var i = 0; i < ns_dataset.max; i++) {
+    //     var point = [];
+    //     point.push({ state: "Trying", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%50 +10});
+    //     point.push({ state: "Proceeding", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%20})
+    //     point.push({ state: "Completed", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%30 + 5})
+    //     point.push({ state: "Terminated", start: Date.now(), end: Date.now() + 0})//Math.ceil(Math.random()*1000)%50})
+    //     ns_dataset.data.push(point)
+    // }
+
+    // PLOT -> Processed Requests data:
+	rtplot("rt_plot", rt_dataset);
+    prplot("pr_plot", pr_dataset);
+    // transplot("inv_c_plot", ic_dataset)
+    // transplot("non_c_plot", nc_dataset)
+    // transplot("inv_s_plot", is_dataset)
+    // transplot("non_s_plot", ns_dataset)
+
+	var a_reg_non_c_plot = {max: 0, data: []};
+	var b_reg_non_c_plot = {max: 0, data: []};
+
+	// NOTE: testing server
+	var server = "192.168.1.103:5010"; //"10.1.80.105:5010"; //"192.168.1.103:5010";
+    var ws = new WebSocket("ws://" + server + "/ws");
+
+    ws.onopen = function() {
+        console.log("[OPENED]");
+
+		ws.send(JSON.stringify({command: "jobs"}));
+    };
+
+    ws.onclose = function() {
+        console.log("[CLOSED]");
+    };
+
+	// Number of running jobs:
+	var items = 0;
+	var a_phones = {};
+	var b_phones = {};
+
+    ws.onmessage = function(msg) {
+		var input = JSON.parse(msg.data);
+		// a_reg_non_c_plot.max = 0;
+		// b_reg_non_c_plot.max = 0;
+		//
+		// a_reg_non_c_plot.data = [];
+		// b_reg_non_c_plot.data = [];
+		//console.log("[MSG]", input, msg.data);
+		// console.log(input)
+		if (input.event === "jobs") {
+			items = parseInt(input.data);
+
+			for (var i = 0; i < items; i++) {
+				a_phones["ana_"+i] = {
+					name: "ana_"+i,
+					state: "pending",
+
+					requests: {},
+					transactions: [],
+				};
+
+				b_phones["bob_"+i] = {
+					name: "bob_"+i,
+					state: "pending",
+
+					requests: {},
+					transactions: [],
+				};
+			}
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "created") {
+			// console.log(input.event, input.data.phone, input.data.state, input.data);
+
+			if (input.data.phone.indexOf("ana_") === 0)
+				a_phones[input.data.phone].state = input.event;
+			else if (input.data.phone.indexOf("bob_") === 0)
+				b_phones[input.data.phone].state = input.event;
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "connected") {
+			// console.log(input.event, input.data.phone, input.data.state, input.data);
+
+			if (input.data.phone.indexOf("ana_") === 0)
+				a_phones[input.data.phone].state = input.event;
+			else if (input.data.phone.indexOf("bob_") === 0)
+				b_phones[input.data.phone].state = input.event;
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "registered") {
+			//console.log(input.event, input.data.phone, input.data.state, input.data);
+
+			if (input.data.phone.indexOf("ana_") === 0) {
+				a_phones[input.data.phone].state = input.event;
+				a_phones[input.data.phone].requests = input.data;
+			} else if (input.data.phone.indexOf("bob_") === 0) {
+				b_phones[input.data.phone].state = input.event;
+				b_phones[input.data.phone].requests = input.data;
+			}
+
+			phonesplot("a_phones", "b_phones", a_phones, b_phones);
+		} else if (input.event === "call") {
+		} else if (input.event === "transaction") {
+			//console.log(input.event, input.data.phone, input.data.state, input.data.msg);
+
+			if (input.data.phone.indexOf("ana_") === 0) {
+				// a_phones[input.data.phone].state = input.event;
+				a_phones[input.data.phone].transactions.push(input.data);
+			} else if (input.data.phone.indexOf("bob_") === 0) {
+				// b_phones[input.data.phone].state = input.event;
+				b_phones[input.data.phone].transactions.push(input.data);
+			}
+
+		} else if (input.event === "transactions") {
+			console.log(input.event, input.data.phone, input.data.state, input.data.msg);
+return;
+			if (/*(input.data.state === "REGISTERED" || input.data.state === "AVAILABLE") && */input.data.msg && input.data.msg.data) {
+
+				for (var j = 0; j < input.data.msg.length; j++) {
+					var hist = input.data.msg[j].hist;
+
+					//console.log(hist.length);
+					//if (hist.length === 1) continue;//console.log(input.msg[j]);
+
+					var point = [];
+					point.push({ state: "Trying", start: 0, end: 0});
+					point.push({ state: "Proceeding", start: 0, end: 0});
+					point.push({ state: "Completed", start: 0, end: 0});
+					point.push({ state: "Terminated", start: 0, end: 0});
+
+					for (var i = 0; i < hist.length; i++) {
+						// if (input.msg[i].type === "NON_CLIENT") {
+							// var point = [];
+							// point.push({ state: "Trying", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%50 +10});
+							// point.push({ state: "Proceeding", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%20})
+							// point.push({ state: "Completed", start: Date.now(), end: Date.now() + Math.ceil(Math.random()*1000)%30 + 5})
+							// point.push({ state: "Terminated", start: Date.now(), end: Date.now() + 0})//Math.ceil(Math.random()*1000)%50})
+							// nc_dataset.data.push(point)
+						//}
+
+						// "to":"TRYING", "at":1461071391707
+						// "from":"TRYING", "to":"COMPLETED", "at":1461071391722
+						// "from":"COMPLETED", "to":"TERMINATED", "at":1461071391723
+
+						if (hist[i].to === "TRYING") {
+							point[0].start = hist[i].at;
+							point[0].end = hist[i].at;
+						} else if (hist[i].to === "PROCEEDING") {
+							point[1].start = hist[i].at;
+							point[1].end = hist[i].at;
+						} else if (hist[i].to === "COMPLETED") {
+							point[2].start = hist[i].at;
+							point[2].end = hist[i].at;
+						} else if (hist[i].to === "TERMINATED") {
+							point[3].start = hist[i].at;
+							point[3].end = hist[i].at;
+						}
+
+						if (hist[i].from === "TRYING")
+							point[0].end = hist[i].at;
+						else if (hist[i].from === "PROCEEDING")
+							point[1].end = hist[i].at;
+						else if (hist[i].from === "COMPLETED")
+							point[2].end = hist[i].at;
+						else if (hist[i].from === "TERMINATED")
+							point[3].end = hist[i].at;
+					}
+
+					if (input.data.phone.indexOf("ana") === 0 && point[3].start !== 0) {
+						//var b_reg_non_c_plot = {max: 0, data: []};
+						a_reg_non_c_plot.data.push(point);
+						a_reg_non_c_plot.max++;
+						//console.log("ana", point);
+					} else if (input.data.phone.indexOf("bob") === 0 && point[3].start !== 0) {
+						b_reg_non_c_plot.data.push(point);
+						b_reg_non_c_plot.max++;
+						//console.log("bob", point);
+					}
+				}
+			}
+
+			if (a_reg_non_c_plot.data.length !== 0) transplot("a_reg_non_c_plot", a_reg_non_c_plot);
+		    if (b_reg_non_c_plot.data.length !== 0) transplot("b_reg_non_c_plot", b_reg_non_c_plot);
+		}
+    };
+
+    ws.onerror = function(error) {
+        console.log("ERROR:", error);
+    };
+
+	// Test phase initiation commands
+
+	function create() {
+		ws.send(JSON.stringify({command: "create"}));
+	};
+
+	function connect() {
+		ws.send(JSON.stringify({command: "connect"}));
+	};
+
+	function register() {
+		ws.send(JSON.stringify({command: "register"}));
+	};
+
+	function call() {
+		ws.send(JSON.stringify({command: "call"}));
+	};
+
+	var regs_200 = [];
+	var regs_401 = [];
+
+	function plotRegisters() {
+		var reg_reqs = [];
+		for ( var key in a_phones ) {
+		    if (a_phones.hasOwnProperty(key)) {
+				if (a_phones[key].requests.msg) {
+					var items = a_phones[key].requests.msg.items;
+					for ( var req_key in items) {
+						//reg_reqs.push(a_phones[key]);
+						if (items.hasOwnProperty(req_key)) {
+							var start = items[req_key].sentAt;
+							var parse = items[req_key].responses[0].parseTime;
+							var end = items[req_key].responses[0].receivedAt;
+							var code = items[req_key].responses[0].code;
+							console.log(code, parse, end - start, start, end);
+
+							if (code === 401) {
+								regs_401.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+							} else if (code === 200) {
+								regs_200.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+							}
+						}
+					}
+				}
+		    }
+		}
+		histplot("reg200_hist_plot", regs_200);
+		histplot("reg401_hist_plot", regs_401);
+	}
+
+	var reg_401_reqs = [];
+	var reg_200_reqs = [];
+	var inv_reqs = [];
+	var bye_reqs = [];
+
+	function plotTransactions(phones, label) {
+		// phones = a_phones | b_phones
+		// use 'a' or 'b' label prefix
+
+		for ( var key in phones ) {
+		    if (phones.hasOwnProperty(key)) {
+				//console.log(phones[key].transactions.msg);
+				if (phones[key].transactions) {
+					for (var i = 0; i < phones[key].transactions.length; i++) {
+						var req = phones[key].transactions[i].msg.data.request;
+						var start = req.sentAt || req.responses[0].sentAt;
+						var parse = req.responses[0].parseTime;
+						var end = req.responses[0].receivedAt || req.receivedAt;
+						var code = req.responses[0].code;
+						//console.log(code, parse, end - start, start, end);
+
+						if (req.method === "REGISTER") {
+							if (code === 401) {
+								reg_401_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+							} else if (code === 200) {
+								reg_200_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+							}
+						} else if (req.method === "INVITE") {
+							inv_reqs.push({ code: code, parse: parse, response:  end - start, start: start, end: end });
+						} else if (req.method === "BYE") {
+							bye_reqs.push({ code: code, parse: parse, response:  Math.abs(end - start), start: start, end: end });
+						}
+					}
+				}
+		    }
+		}
+
+		//histplot("reg200_hist_plot", regs_200);
+		//histplot("reg401_hist_plot", regs_401);
+	}
+
+	//histplot("reg_hist_plot", regs_200);
+
+	var reg_401 = [
+		{ code: 401, parse: 1, response:  1752, start: 1462878710838, end: 1462878712590 },
+		{ code: 401, parse: 0, response:  1760, start: 1462878710843, end: 1462878712603 },
+		{ code: 401, parse: 1, response:  1767, start: 1462878710844, end: 1462878712611 },
+		{ code: 401, parse: 0, response:  1771, start: 1462878710845, end: 1462878712616 },
+		{ code: 401, parse: 0, response:  1774, start: 1462878710846, end: 1462878712620 },
+		{ code: 401, parse: 0, response:  1776, start: 1462878710848, end: 1462878712624 },
+		{ code: 401, parse: 0, response:  1778, start: 1462878710849, end: 1462878712627 },
+		{ code: 401, parse: 1, response:  1832, start: 1462878710850, end: 1462878712682 },
+		{ code: 401, parse: 0, response:  1834, start: 1462878710851, end: 1462878712685 },
+		{ code: 401, parse: 0, response:  1834, start: 1462878710854, end: 1462878712688 },
+		{ code: 401, parse: 0, response:  1838, start: 1462878710855, end: 1462878712693 },
+		{ code: 401, parse: 0, response:  1840, start: 1462878710857, end: 1462878712697 },
+		{ code: 401, parse: 1, response:  1878, start: 1462878710858, end: 1462878712736 },
+		{ code: 401, parse: 1, response:  1919, start: 1462878710859, end: 1462878712778 },
+		{ code: 401, parse: 0, response:  1921, start: 1462878710860, end: 1462878712781 },
+		{ code: 401, parse: 0, response:  1921, start: 1462878710862, end: 1462878712783 },
+		{ code: 401, parse: 0, response:  1922, start: 1462878710864, end: 1462878712786 },
+		{ code: 401, parse: 0, response:  1923, start: 1462878710865, end: 1462878712788 },
+		{ code: 401, parse: 1, response:  1925, start: 1462878710866, end: 1462878712791 },
+		{ code: 401, parse: 1, response:  1927, start: 1462878710867, end: 1462878712794 },
+		{ code: 401, parse: 0, response:  1928, start: 1462878710869, end: 1462878712797 },
+		{ code: 401, parse: 1, response:  1931, start: 1462878710871, end: 1462878712802 },
+		{ code: 401, parse: 0, response:  1933, start: 1462878710872, end: 1462878712805 },
+		{ code: 401, parse: 0, response:  1939, start: 1462878710874, end: 1462878712813 },
+		{ code: 401, parse: 1, response:  1940, start: 1462878710876, end: 1462878712816 },
+		{ code: 401, parse: 0, response:  1942, start: 1462878710877, end: 1462878712819 },
+		{ code: 401, parse: 0, response:  1943, start: 1462878710878, end: 1462878712821 },
+		{ code: 401, parse: 0, response:  1945, start: 1462878710880, end: 1462878712825 },
+		{ code: 401, parse: 0, response:  1947, start: 1462878710881, end: 1462878712828 },
+		{ code: 401, parse: 0, response:  1949, start: 1462878710882, end: 1462878712831 },
+		{ code: 401, parse: 0, response:  1950, start: 1462878710883, end: 1462878712833 },
+		{ code: 401, parse: 1, response:  1863, start: 1462878710972, end: 1462878712835 },
+		{ code: 401, parse: 1, response:  1865, start: 1462878710973, end: 1462878712838 },
+		{ code: 401, parse: 0, response:  1863, start: 1462878710978, end: 1462878712841 },
+		{ code: 401, parse: 1, response:  1867, start: 1462878710980, end: 1462878712847 },
+		{ code: 401, parse: 1, response:  1869, start: 1462878710981, end: 1462878712850 },
+		{ code: 401, parse: 0, response:  1876, start: 1462878710983, end: 1462878712859 },
+		{ code: 401, parse: 0, response:  1878, start: 1462878710984, end: 1462878712862 },
+		{ code: 401, parse: 2, response:  1884, start: 1462878710985, end: 1462878712869 },
+		{ code: 401, parse: 1, response:  1891, start: 1462878710986, end: 1462878712877 },
+		{ code: 401, parse: 1, response:  1903, start: 1462878710988, end: 1462878712891 },
+		{ code: 401, parse: 0, response:  2010, start: 1462878710990, end: 1462878713000 },
+		{ code: 401, parse: 0, response:  2012, start: 1462878710991, end: 1462878713003 },
+		{ code: 401, parse: 0, response:  2013, start: 1462878710993, end: 1462878713006 },
+		{ code: 401, parse: 1, response:  2015, start: 1462878710994, end: 1462878713009 },
+		{ code: 401, parse: 0, response:  2036, start: 1462878710996, end: 1462878713032 },
+		{ code: 401, parse: 0, response:  2037, start: 1462878710997, end: 1462878713034 },
+		{ code: 401, parse: 1, response:  2070, start: 1462878711009, end: 1462878713079 },
+		{ code: 401, parse: 0, response:  2073, start: 1462878711012, end: 1462878713085 },
+		{ code: 401, parse: 1, response:  2082, start: 1462878711014, end: 1462878713096 },
+		{ code: 401, parse: 1, response:  1834, start: 1462878710817, end: 1462878712651 },
+		{ code: 401, parse: 0, response:  1835, start: 1462878710819, end: 1462878712654 },
+		{ code: 401, parse: 0, response:  1838, start: 1462878710820, end: 1462878712658 },
+		{ code: 401, parse: 0, response:  1908, start: 1462878710821, end: 1462878712729 },
+		{ code: 401, parse: 0, response:  1818, start: 1462878710896, end: 1462878712714 },
+		{ code: 401, parse: 1, response:  1817, start: 1462878710898, end: 1462878712715 },
+		{ code: 401, parse: 1, response:  1967, start: 1462878710899, end: 1462878712866 },
+		{ code: 401, parse: 0, response:  1869, start: 1462878710901, end: 1462878712770 },
+		{ code: 401, parse: 0, response:  1818, start: 1462878710902, end: 1462878712720 },
+		{ code: 401, parse: 0, response:  1862, start: 1462878710904, end: 1462878712766 },
+		{ code: 401, parse: 0, response:  1859, start: 1462878710905, end: 1462878712764 },
+		{ code: 401, parse: 0, response:  1827, start: 1462878710906, end: 1462878712733 },
+		{ code: 401, parse: 0, response:  1822, start: 1462878710908, end: 1462878712730 },
+		{ code: 401, parse: 1, response:  2019, start: 1462878710909, end: 1462878712928 },
+		{ code: 401, parse: 0, response:  2011, start: 1462878710911, end: 1462878712922 },
+		{ code: 401, parse: 0, response:  2022, start: 1462878710912, end: 1462878712934 },
+		{ code: 401, parse: 0, response:  2055, start: 1462878710914, end: 1462878712969 },
+		{ code: 401, parse: 1, response:  2049, start: 1462878710915, end: 1462878712964 },
+		{ code: 401, parse: 0, response:  2045, start: 1462878710917, end: 1462878712962 },
+		{ code: 401, parse: 0, response:  2022, start: 1462878710918, end: 1462878712940 },
+		{ code: 401, parse: 0, response:  2018, start: 1462878710919, end: 1462878712937 },
+		{ code: 401, parse: 0, response:  2064, start: 1462878710921, end: 1462878712985 },
+		{ code: 401, parse: 1, response:  2059, start: 1462878710923, end: 1462878712982 },
+		{ code: 401, parse: 0, response:  2052, start: 1462878710928, end: 1462878712980 },
+		{ code: 401, parse: 0, response:  2049, start: 1462878710929, end: 1462878712978 },
+		{ code: 401, parse: 0, response:  2043, start: 1462878710930, end: 1462878712973 },
+		{ code: 401, parse: 0, response:  2040, start: 1462878710931, end: 1462878712971 },
+		{ code: 401, parse: 0, response:  2132, start: 1462878710933, end: 1462878713065 },
+		{ code: 401, parse: 33, response: 2062, start: 1462878710934, end: 1462878712996 },
+		{ code: 401, parse: 1, response:  2059, start: 1462878710935, end: 1462878712994 },
+		{ code: 401, parse: 1, response:  2055, start: 1462878710937, end: 1462878712992 },
+		{ code: 401, parse: 0, response:  2051, start: 1462878710938, end: 1462878712989 },
+		{ code: 401, parse: 0, response:  2048, start: 1462878710939, end: 1462878712987 },
+		{ code: 401, parse: 1, response:  2208, start: 1462878710941, end: 1462878713149 },
+		{ code: 401, parse: 1, response:  2204, start: 1462878710942, end: 1462878713146 },
+		{ code: 401, parse: 0, response:  2146, start: 1462878710943, end: 1462878713089 },
+		{ code: 401, parse: 0, response:  2142, start: 1462878710945, end: 1462878713087 },
+		{ code: 401, parse: 1, response:  2137, start: 1462878710947, end: 1462878713084 },
+		{ code: 401, parse: 0, response:  2134, start: 1462878710948, end: 1462878713082 },
+		{ code: 401, parse: 0, response:  2131, start: 1462878710949, end: 1462878713080 },
+		{ code: 401, parse: 0, response:  2125, start: 1462878710951, end: 1462878713076 },
+		{ code: 401, parse: 0, response:  2119, start: 1462878710952, end: 1462878713071 },
+		{ code: 401, parse: 0, response:  2114, start: 1462878710954, end: 1462878713068 },
+		{ code: 401, parse: 0, response:  2111, start: 1462878710955, end: 1462878713066 },
+		{ code: 401, parse: 0, response:  2338, start: 1462878710956, end: 1462878713294 },
+		{ code: 401, parse: 1, response:  2332, start: 1462878710958, end: 1462878713290 },
+		{ code: 401, parse: 1, response:  2328, start: 1462878710959, end: 1462878713287 },
+		{ code: 401, parse: 0, response:  2238, start: 1462878711045, end: 1462878713283 },
+		{ code: 401, parse: 3, response:  2197, start: 1462878711050, end: 1462878713247 },
+		{ code: 401, parse: 0, response:  2109, start: 1462878711051, end: 1462878713160 }
+	];
+
+	var reg_200 = [
+		{ code: 200, parse: 0, response:  515, start: 1462878712592, end: 1462878713107 },
+		{ code: 200, parse: 1, response:  585, start: 1462878712604, end: 1462878713189 },
+		{ code: 200, parse: 1, response:  589, start: 1462878712613, end: 1462878713202 },
+		{ code: 200, parse: 1, response:  603, start: 1462878712617, end: 1462878713220 },
+		{ code: 200, parse: 1, response:  608, start: 1462878712621, end: 1462878713229 },
+		{ code: 200, parse: 0, response:  614, start: 1462878712624, end: 1462878713238 },
+		{ code: 200, parse: 0, response:  618, start: 1462878712628, end: 1462878713246 },
+		{ code: 200, parse: 1, response:  569, start: 1462878712683, end: 1462878713252 },
+		{ code: 200, parse: 0, response:  578, start: 1462878712685, end: 1462878713263 },
+		{ code: 200, parse: 1, response:  581, start: 1462878712688, end: 1462878713269 },
+		{ code: 200, parse: 0, response:  587, start: 1462878712694, end: 1462878713281 },
+		{ code: 200, parse: 0, response:  605, start: 1462878712697, end: 1462878713302 },
+		{ code: 200, parse: 1, response:  842, start: 1462878712776, end: 1462878713618 },
+		{ code: 200, parse: 1, response:  844, start: 1462878712779, end: 1462878713623 },
+		{ code: 200, parse: 0, response:  851, start: 1462878712782, end: 1462878713633 },
+		{ code: 200, parse: 1, response:  855, start: 1462878712784, end: 1462878713639 },
+		{ code: 200, parse: 0, response:  859, start: 1462878712787, end: 1462878713646 },
+		{ code: 200, parse: 0, response:  871, start: 1462878712789, end: 1462878713660 },
+		{ code: 200, parse: 0, response:  872, start: 1462878712792, end: 1462878713664 },
+		{ code: 200, parse: 0, response:  876, start: 1462878712795, end: 1462878713671 },
+		{ code: 200, parse: 0, response:  882, start: 1462878712798, end: 1462878713680 },
+		{ code: 200, parse: 0, response:  883, start: 1462878712803, end: 1462878713686 },
+		{ code: 200, parse: 1, response:  886, start: 1462878712805, end: 1462878713691 },
+		{ code: 200, parse: 1, response:  883, start: 1462878712814, end: 1462878713697 },
+		{ code: 200, parse: 1, response:  885, start: 1462878712817, end: 1462878713702 },
+		{ code: 200, parse: 1, response:  890, start: 1462878712819, end: 1462878713709 },
+		{ code: 200, parse: 1, response:  899, start: 1462878712822, end: 1462878713721 },
+		{ code: 200, parse: 1, response:  905, start: 1462878712826, end: 1462878713731 },
+		{ code: 200, parse: 1, response:  909, start: 1462878712829, end: 1462878713738 },
+		{ code: 200, parse: 1, response:  916, start: 1462878712831, end: 1462878713747 },
+		{ code: 200, parse: 1, response:  921, start: 1462878712834, end: 1462878713755 },
+		{ code: 200, parse: 0, response:  929, start: 1462878712836, end: 1462878713765 },
+		{ code: 200, parse: 0, response:  932, start: 1462878712839, end: 1462878713771 },
+		{ code: 200, parse: 0, response:  939, start: 1462878712842, end: 1462878713781 },
+		{ code: 200, parse: 0, response:  939, start: 1462878712848, end: 1462878713787 },
+		{ code: 200, parse: 1, response:  944, start: 1462878712851, end: 1462878713795 },
+		{ code: 200, parse: 1, response:  940, start: 1462878712860, end: 1462878713800 },
+		{ code: 200, parse: 0, response:  948, start: 1462878712862, end: 1462878713810 },
+		{ code: 200, parse: 0, response:  1381, start: 1462878712875, end: 1462878714256 },
+		{ code: 200, parse: 1, response:  1388, start: 1462878712878, end: 1462878714266 },
+		{ code: 200, parse: 0, response:  1387, start: 1462878712892, end: 1462878714279 },
+		{ code: 200, parse: 0, response:  1286, start: 1462878713001, end: 1462878714287 },
+		{ code: 200, parse: 1, response:  1287, start: 1462878713004, end: 1462878714291 },
+		{ code: 200, parse: 0, response:  1288, start: 1462878713007, end: 1462878714295 },
+		{ code: 200, parse: 0, response:  1288, start: 1462878713011, end: 1462878714299 },
+		{ code: 200, parse: 0, response:  1270, start: 1462878713033, end: 1462878714303 },
+		{ code: 200, parse: 0, response:  1271, start: 1462878713035, end: 1462878714306 },
+		{ code: 200, parse: 1, response:  1234, start: 1462878713080, end: 1462878714314 },
+		{ code: 200, parse: 0, response:  1232, start: 1462878713086, end: 1462878714318 },
+		{ code: 200, parse: 0, response:  1224, start: 1462878713097, end: 1462878714321 },
+		{ code: 200, parse: 0, response:  803, start: 1462878712652, end: 1462878713455 },
+		{ code: 200, parse: 1, response:  807, start: 1462878712655, end: 1462878713462 },
+		{ code: 200, parse: 1, response:  808, start: 1462878712659, end: 1462878713467 },
+		{ code: 200, parse: 0, response:  1232, start: 1462878712729, end: 1462878713961 },
+		{ code: 200, parse: 6, response:  1223, start: 1462878712715, end: 1462878713938 },
+		{ code: 200, parse: 0, response:  1229, start: 1462878712717, end: 1462878713946 },
+		{ code: 200, parse: 1, response:  1327, start: 1462878712920, end: 1462878714247 },
+		{ code: 200, parse: 0, response:  1211, start: 1462878712770, end: 1462878713981 },
+		{ code: 200, parse: 0, response:  1230, start: 1462878712720, end: 1462878713950 },
+		{ code: 200, parse: 0, response:  1209, start: 1462878712766, end: 1462878713975 },
+		{ code: 200, parse: 0, response:  1205, start: 1462878712765, end: 1462878713970 },
+		{ code: 200, parse: 0, response:  1233, start: 1462878712733, end: 1462878713966 },
+		{ code: 200, parse: 0, response:  1232, start: 1462878712731, end: 1462878713963 },
+		{ code: 200, parse: 0, response:  1334, start: 1462878712929, end: 1462878714263 },
+		{ code: 200, parse: 1, response:  1329, start: 1462878712923, end: 1462878714252 },
+		{ code: 200, parse: 1, response:  1345, start: 1462878712934, end: 1462878714279 },
+		{ code: 200, parse: 1, response:  1394, start: 1462878712969, end: 1462878714363 },
+		{ code: 200, parse: 1, response:  1390, start: 1462878712967, end: 1462878714357 },
+		{ code: 200, parse: 0, response:  1383, start: 1462878712963, end: 1462878714346 },
+		{ code: 200, parse: 0, response:  1381, start: 1462878712941, end: 1462878714322 },
+		{ code: 200, parse: 0, response:  1370, start: 1462878712938, end: 1462878714308 },
+		{ code: 200, parse: 0, response:  1413, start: 1462878712985, end: 1462878714398 },
+		{ code: 200, parse: 0, response:  1408, start: 1462878712983, end: 1462878714391 },
+		{ code: 200, parse: 0, response:  1407, start: 1462878712980, end: 1462878714387 },
+		{ code: 200, parse: 1, response:  1399, start: 1462878712978, end: 1462878714377 },
+		{ code: 200, parse: 0, response:  1400, start: 1462878712973, end: 1462878714373 },
+		{ code: 200, parse: 0, response:  1397, start: 1462878712971, end: 1462878714368 },
+		{ code: 200, parse: 0, response:  1374, start: 1462878713066, end: 1462878714440 },
+		{ code: 200, parse: 0, response:  1396, start: 1462878713030, end: 1462878714426 },
+		{ code: 200, parse: 2, response:  1425, start: 1462878712995, end: 1462878714420 },
+		{ code: 200, parse: 0, response:  1421, start: 1462878712993, end: 1462878714414 },
+		{ code: 200, parse: 0, response:  1418, start: 1462878712991, end: 1462878714409 },
+		{ code: 200, parse: 1, response:  1415, start: 1462878712987, end: 1462878714402 },
+		{ code: 200, parse: 1, response:  1341, start: 1462878713150, end: 1462878714491 },
+		{ code: 200, parse: 0, response:  1340, start: 1462878713148, end: 1462878714488 },
+		{ code: 200, parse: 0, response:  1394, start: 1462878713090, end: 1462878714484 },
+		{ code: 200, parse: 0, response:  1390, start: 1462878713087, end: 1462878714477 },
+		{ code: 200, parse: 0, response:  1388, start: 1462878713085, end: 1462878714473 },
+		{ code: 200, parse: 0, response:  1386, start: 1462878713083, end: 1462878714469 },
+		{ code: 200, parse: 1, response:  1384, start: 1462878713080, end: 1462878714464 },
+		{ code: 200, parse: 0, response:  1379, start: 1462878713077, end: 1462878714456 },
+		{ code: 200, parse: 0, response:  1381, start: 1462878713071, end: 1462878714452 },
+		{ code: 200, parse: 1, response:  1379, start: 1462878713069, end: 1462878714448 },
+		{ code: 200, parse: 0, response:  1376, start: 1462878713067, end: 1462878714443 },
+		{ code: 200, parse: 0, response:  1226, start: 1462878713295, end: 1462878714521 },
+		{ code: 200, parse: 0, response:  1227, start: 1462878713291, end: 1462878714518 },
+		{ code: 200, parse: 0, response:  1220, start: 1462878713288, end: 1462878714508 },
+		{ code: 200, parse: 0, response:  1218, start: 1462878713286, end: 1462878714504 },
+		{ code: 200, parse: 0, response:  1248, start: 1462878713252, end: 1462878714500 },
+		{ code: 200, parse: 0, response:  1261, start: 1462878713233, end: 1462878714494 }
+	];
+
+	histplot("reg401_hist_plot", reg_401);
+	histplot("reg200_hist_plot", reg_200);
+
+	</script>
+
+</body>
+</html>
